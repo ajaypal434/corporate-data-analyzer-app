@@ -3,12 +3,10 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 import pandas as pd
-
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 
 class CorporateReportBuilder:
     def __init__(self, root):
@@ -16,13 +14,12 @@ class CorporateReportBuilder:
         self.root.title("Corporate Data Analyzer (Report + Chart + Export)")
         self.root.geometry("1100x700")
         self.root.resizable(True, True)
-
         self.file_path = ""
         self.df = None
         self.report_df = None
+        
         self.canvas = None
         self.current_figure = None
-
         self.agg_map = {
             "Sum": "sum",
             "Mean": "mean",
@@ -32,7 +29,6 @@ class CorporateReportBuilder:
             "Count": "count",
             "Median": "median",
         }
-
         self._build_ui()
 
     # ---------------- UI ----------------
@@ -45,24 +41,18 @@ class CorporateReportBuilder:
         file_frame.pack(fill="x", padx=15, pady=5)
 
         tk.Label(file_frame, text="Select CSV/Excel:", font=("Arial", 10)).pack(side="left")
-
         tk.Button(file_frame, text="Browse", command=self.browse_file, width=10).pack(side="left", padx=8)
         tk.Button(file_frame, text="Read", command=self.read_file, width=10).pack(side="left")
-
         self.file_lbl = tk.Label(file_frame, text="No file selected", fg="blue")
         self.file_lbl.pack(side="left", padx=10)
-
         # Info row
         info_frame = tk.LabelFrame(self.root, text="File Info", padx=10, pady=8)
         info_frame.pack(fill="x", padx=15, pady=8)
 
         self.info_text = tk.Text(info_frame, height=4)
         self.info_text.pack(fill="x")
-
-        # Controls (dropdowns)
         controls = tk.LabelFrame(self.root, text="Build Report (GroupBy + Aggregation)", padx=10, pady=10)
         controls.pack(fill="x", padx=15, pady=8)
-
         row1 = tk.Frame(controls)
         row1.pack(fill="x", pady=3)
 
@@ -70,7 +60,6 @@ class CorporateReportBuilder:
         self.group_col_var = tk.StringVar()
         self.group_col_cb = ttk.Combobox(row1, textvariable=self.group_col_var, state="disabled", width=30)
         self.group_col_cb.pack(side="left", padx=8)
-
         tk.Label(row1, text="Aggregation:").pack(side="left", padx=(10, 0))
         self.agg_var = tk.StringVar()
         self.agg_cb = ttk.Combobox(
@@ -168,7 +157,6 @@ class CorporateReportBuilder:
         return os.path.dirname(os.path.abspath(self.file_path))
 
     def _safe_numeric_convert(self, series: pd.Series) -> pd.Series:
-        # Convert strings like "12,000" safely to numeric; non-convertible -> NaN
         return pd.to_numeric(series.astype(str).str.replace(",", "", regex=False), errors="coerce")
 
     # ---------------- Actions ----------------
@@ -185,7 +173,6 @@ class CorporateReportBuilder:
         if not self.file_path:
             messagebox.showerror("Error", "Please select a file first.")
             return
-
         try:
             if self.file_path.lower().endswith(".csv"):
                 self.df = pd.read_csv(self.file_path)
@@ -205,8 +192,6 @@ class CorporateReportBuilder:
 
             # Identify text vs numeric columns
             text_cols = list(self.df.select_dtypes(include=["object"]).columns)
-
-            # For numeric columns, also consider columns that are numeric-looking but stored as object
             numeric_cols = list(self.df.select_dtypes(include=["number"]).columns)
             for c in self.df.columns:
                 if c in numeric_cols:
@@ -395,8 +380,6 @@ class CorporateReportBuilder:
             messagebox.showinfo("Exported", f"Chart exported successfully:\n{out_path}")
         except Exception as e:
             messagebox.showerror("Export Error", f"Could not export chart.\n\n{e}")
-
-
 if __name__ == "__main__":
     root = tk.Tk()
     app = CorporateReportBuilder(root)
