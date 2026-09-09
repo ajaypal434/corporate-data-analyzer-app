@@ -17,6 +17,7 @@ class CorporateReportBuilder:
         self.file_path = ""
         self.df = None
         self.report_df = None
+        
         self.canvas = None
         self.current_figure = None
         self.agg_map = {
